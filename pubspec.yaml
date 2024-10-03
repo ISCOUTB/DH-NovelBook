@@ -62,6 +62,10 @@ flutter:
   assets:
     - assets/images/logo.jpeg  # Asegúrate de que esta línea esté presente y correctamente indentada
     - assets/images/fondo.jpeg
+    - assets/images/libro1.jpeg
+    - assets/images/libro2.jpeg
+    - assets/images/libro3.jpg
+    - assets/images/prede.jpg
 
   #   - images/a_dot_ham.jpeg
 

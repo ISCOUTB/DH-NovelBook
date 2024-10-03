@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Login App',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: LoginScreen(),  // Quita const aquí
+      home: LoginScreen(),
     );
   }
 }
@@ -21,7 +21,7 @@ class LoginScreen extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  LoginScreen({super.key}); // Quita const aquí
+  LoginScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +42,7 @@ class LoginScreen extends StatelessWidget {
               width: 350,
               padding: const EdgeInsets.all(16.0),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.9),
+                color: Colors.white.withOpacity(0.7), // Cambia la opacidad aquí
                 borderRadius: BorderRadius.circular(15.0),
                 boxShadow: [
                   BoxShadow(

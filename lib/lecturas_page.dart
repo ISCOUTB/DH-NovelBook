@@ -6,8 +6,122 @@ class LecturasPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Control de Lecturas HOLAAAA'),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Control de Lectura'),
+        backgroundColor: Colors.blue,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Mis Libros Leídos',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
+            Expanded(
+              child: ListView(
+                children: const [
+                  BookProgressCard(
+                    title: 'El Nombre del Viento',
+                    author: 'Patrick Rothfuss',
+                    progress: 75, // Progreso en porcentaje
+                  ),
+                  SizedBox(height: 10),
+                  BookProgressCard(
+                    title: 'Cien Años de Soledad',
+                    author: 'Gabriel García Márquez',
+                    progress: 50,
+                  ),
+                  SizedBox(height: 10),
+                  BookProgressCard(
+                    title: '1984',
+                    author: 'George Orwell',
+                    progress: 100, // Marcar como leído
+                  ),
+                ],
+              ),
+            ),
+            Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  // Navegar a otra página para agregar más libros
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blueAccent,
+                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                ),
+                child: const Text(
+                  'Agregar Nuevo Libro',
+                  style: TextStyle(fontSize: 18),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class BookProgressCard extends StatelessWidget {
+  final String title;
+  final String author;
+  final int progress; // Progreso en porcentaje (0-100)
+
+  const BookProgressCard({
+    required this.title,
+    required this.author,
+    required this.progress,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              author,
+              style: const TextStyle(color: Colors.grey),
+            ),
+            const SizedBox(height: 10),
+            LinearProgressIndicator(
+              value: progress / 100, // Progreso como valor entre 0 y 1
+              backgroundColor: Colors.grey[300],
+              color: Colors.blueAccent,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Progreso: $progress%',
+              style: const TextStyle(fontSize: 14),
+            ),
+            const SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () {
+                // Marcar el libro como leído
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              ),
+              child: const Text('Marcar como Leído'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
