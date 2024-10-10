@@ -17,19 +17,20 @@ class Panel extends StatelessWidget {
         appBar: AppBar(
           backgroundColor: Colors.blue,
           title: Row(
-            mainAxisAlignment: MainAxisAlignment.start,  // Cambia a start para alinear a la izquierda
+            mainAxisAlignment: MainAxisAlignment.start,  // Alinea a la izquierda
             children: [
-              Padding(  // Agrega un Padding para dar espacio al logo
-                padding: const EdgeInsets.only(right: 8.0),  // Espacio entre el logo y el texto
+              Container(
+                height: 60,  // Aumenta el tamaño del contenedor
+                padding: const EdgeInsets.only(right: 16.0),  // Espacio entre el logo y el texto
                 child: Image.asset(
-                  'assets/images/logo.jpeg',  // Ruta del logo
-                  height: 40,  // Tamaño del logo
+                  'assets/images/logo.jpeg',  // Asegúrate de que sea una imagen de alta resolución
+                  fit: BoxFit.contain,  // Mantiene el aspecto de la imagen
                 ),
               ),
               const Text(
                 'NovelNook',
                 style: TextStyle(
-                  fontSize: 22,
+                  fontSize: 24,  // Aumenta el tamaño del texto
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),

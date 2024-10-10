@@ -8,13 +8,33 @@ class BuscarLibrosPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final TextEditingController searchController = TextEditingController();
     
-    // Simulación de una lista de libros
+    // Simulación de una lista de libros con imágenes
     final List<Map<String, String>> libros = [
-      {'title': 'Cien años de soledad', 'author': 'Gabriel García Márquez'},
-      {'title': '1984', 'author': 'George Orwell'},
-      {'title': 'El amor en los tiempos del cólera', 'author': 'Gabriel García Márquez'},
-      {'title': 'La casa de los espíritus', 'author': 'Isabel Allende'},
-      {'title': 'El túnel', 'author': 'Ernesto Sabato'},
+      {
+        'title': 'Cien años de soledad',
+        'author': 'Gabriel García Márquez',
+        'imagePath': 'assets/images/libro2.jpeg'
+      },
+      {
+        'title': '1984',
+        'author': 'George Orwell',
+        'imagePath': 'assets/images/libro3.jpg'
+      },
+      {
+        'title': 'El amor en los tiempos del cólera',
+        'author': 'Gabriel García Márquez',
+        'imagePath': 'assets/images/libro4.jpg'
+      },
+      {
+        'title': 'La casa de los espíritus',
+        'author': 'Isabel Allende',
+        'imagePath': 'assets/images/libro5.jpg'
+      },
+      {
+        'title': 'El túnel',
+        'author': 'Ernesto Sabato',
+        'imagePath': 'assets/images/libro6.png'
+      },
       // Agrega más libros aquí
     ];
 
@@ -55,6 +75,12 @@ class BuscarLibrosPage extends StatelessWidget {
                   return Card(
                     margin: const EdgeInsets.symmetric(vertical: 8),
                     child: ListTile(
+                      leading: Image.asset(
+                        libro['imagePath'] ?? 'assets/images/default_book.jpg', // Imagen del libro
+                        width: 50,
+                        height: 70,
+                        fit: BoxFit.cover,
+                      ),
                       title: Text(libro['title'] ?? 'Título no disponible'),
                       subtitle: Text(libro['author'] ?? 'Autor no disponible'),
                       trailing: IconButton(

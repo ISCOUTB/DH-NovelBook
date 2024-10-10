@@ -1,28 +1,12 @@
-// main.dart
+// register.dart
 import 'package:flutter/material.dart';
-import 'panel.dart';
-import 'register.dart'; // Importar la nueva pantalla de registro
 
-void main() => runApp(const MyApp());
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Login App',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: LoginScreen(),
-    );
-  }
-}
-
-class LoginScreen extends StatelessWidget {
+class RegisterScreen extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
 
-  LoginScreen({super.key});
+  RegisterScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +27,7 @@ class LoginScreen extends StatelessWidget {
               width: 350,
               padding: const EdgeInsets.all(16.0),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.7),
+                color: Colors.white.withOpacity(0.7), // Cambia la opacidad aquí
                 borderRadius: BorderRadius.circular(15.0),
                 boxShadow: [
                   BoxShadow(
@@ -57,7 +41,7 @@ class LoginScreen extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const Text(
-                    'Iniciar Sesión',
+                    'Crear una cuenta',
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
@@ -87,14 +71,23 @@ class LoginScreen extends StatelessWidget {
                     ),
                     obscureText: true,
                   ),
+                  const SizedBox(height: 20),
+                  TextField(
+                    controller: _confirmPasswordController,
+                    decoration: InputDecoration(
+                      labelText: 'Confirmar Password',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      prefixIcon: const Icon(Icons.lock),
+                    ),
+                    obscureText: true,
+                  ),
                   const SizedBox(height: 40),
                   ElevatedButton(
                     onPressed: () {
-                      // Navega al Panel Principal
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => const Panel()),
-                      );
+                      // Lógica para registrar el usuario
+                      Navigator.pop(context); // Vuelve a la pantalla de inicio de sesión después de registrar
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blueAccent,
@@ -104,21 +97,7 @@ class LoginScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10.0),
                       ),
                     ),
-                    child: const Text('Iniciar Sesión'),
-                  ),
-                  const SizedBox(height: 20),
-                  TextButton(
-                    onPressed: () {
-                      // Navega a la pantalla de registro
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => RegisterScreen()),
-                      );
-                    },
-                    child: const Text(
-                      '¿No tienes cuenta? Regístrate',
-                      style: TextStyle(color: Colors.blueAccent),
-                    ),
+                    child: const Text('Registrarte'),
                   ),
                 ],
               ),
