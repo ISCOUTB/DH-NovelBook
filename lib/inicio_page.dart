@@ -1,148 +1,168 @@
+// inicio_page.dart
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+// ignore: unused_import
+import 'dart:typed_data';
 import 'package:url_launcher/url_launcher.dart';
 
-class InicioPage extends StatelessWidget {
+class InicioPage extends StatefulWidget {
   const InicioPage({super.key});
+
+  @override
+  InicioPageState createState() => InicioPageState();
+}
+
+class InicioPageState extends State<InicioPage> {
+  List<dynamic> librosDestacados = [];
+  bool isLoading = true;
+  String errorMessage = '';
+
+  @override
+  void initState() {
+    super.initState();
+    fetchLibrosDestacados();
+  }
+
+  Future<void> fetchLibrosDestacados() async {
+    try {
+      final response = await http.get(Uri.parse('http://192.168.1.36/DH-NovelBook/buscar_libros.php'));
+      if (response.statusCode == 200) {
+        setState(() {
+          librosDestacados = json.decode(response.body).take(3).toList(); // Mostrar solo los primeros 3 libros
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          errorMessage = 'Error al cargar los libros: ${response.statusCode}';
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        errorMessage = 'Error de conexión: $e';
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> abrirPDFEnNavegador(String url) async {
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    } else {
+      throw 'No se pudo abrir $url';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Bienvenido a NovelNook',
-                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                'Explora nuestra colección de libros y encuentra tu próxima lectura.',
-                style: TextStyle(fontSize: 18),
-              ),
-              const SizedBox(height: 30),
-
-              // Sección de libros destacados
-              const Text(
-                'Libros Destacados',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 10),
-              SizedBox(
-                height: 220, // Ajusta la altura según sea necesario
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: const [
-                    BookCard(
-                      imageUrl: 'assets/images/libro1.jpeg',
-                      title: 'El Nombre del Viento',
-                      author: 'Patrick Rothfuss',
-                      pdfUrl: 'https://landing.universidadisep.com/wp-content/uploads/2018/08/El-Nombre-Del-Viento-Patrick-Rothfuss.pdf', // URL del PDF
-                    ),
-                    SizedBox(width: 10), // Espaciado entre las tarjetas
-                    BookCard(
-                      imageUrl: 'assets/images/libro2.jpeg',
-                      title: 'Cien Años de Soledad',
-                      author: 'Gabriel García Márquez',
-                      pdfUrl: 'https://example.com/libro2.pdf', // URL del PDF
-                    ),
-                    SizedBox(width: 10), // Espaciado entre las tarjetas
-                    BookCard(
-                      imageUrl: 'assets/images/libro3.jpg',
-                      title: '1984',
-                      author: 'George Orwell',
-                      pdfUrl: 'https://example.com/libro3.pdf', // URL del PDF
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // Botón para explorar más libros
-              Center(
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Navegar a otra página o realizar otra acción
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blueAccent,
-                    padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                  ),
-                  child: const Text(
-                    'Explorar Más Libros',
-                    style: TextStyle(fontSize: 18),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
+      appBar: AppBar(
+        title: const Text('Bienvenido a NovelNook'),
       ),
-    );
-  }
-}
-
-class BookCard extends StatelessWidget {
-  final String imageUrl;
-  final String title;
-  final String author;
-  final String pdfUrl;
-
-  const BookCard({
-    required this.imageUrl,
-    required this.title,
-    required this.author,
-    required this.pdfUrl,
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,  // Cambia el cursor al de "puntero"
-      child: GestureDetector(
-        onTap: () async {
-          final Uri url = Uri.parse(pdfUrl);
-          if (await canLaunchUrl(url)) {
-            await launchUrl(url);
-          } else {
-            // ignore: use_build_context_synchronously
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('No se pudo abrir el PDF')),
-            );
-          }
-        },
-        child: Card(
-          elevation: 4,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          child: Column(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.asset(
-                  imageUrl,
-                  height: 150, // Ajusta la altura según sea necesario
-                  width: 100,
-                  fit: BoxFit.cover,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                title,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                author,
-                style: const TextStyle(color: Colors.grey),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : errorMessage.isNotEmpty
+                ? Center(child: Text(errorMessage))
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Libros Destacados',
+                        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 16),
+                      librosDestacados.isEmpty
+                          ? const Center(child: Text('No hay libros destacados disponibles'))
+                          : SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: librosDestacados.map((libro) {
+                                  return MouseRegion(
+                                    cursor: SystemMouseCursors.click,
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        if (libro['pdf'] != null && libro['pdf'].isNotEmpty) {
+                                          abrirPDFEnNavegador('http://192.168.1.36/DH-NovelBook/${libro['pdf']}');
+                                        } else {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            const SnackBar(content: Text('PDF no disponible')),
+                                          );
+                                        }
+                                      },
+                                      child: Card(
+                                        margin: const EdgeInsets.symmetric(horizontal: 8.0),
+                                        child: SizedBox(
+                                          width: 150,
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              libro['imagen'] != null
+                                                  ? Image.memory(
+                                                      base64Decode(libro['imagen']),
+                                                      width: 150,
+                                                      height: 200,
+                                                      fit: BoxFit.cover,
+                                                      errorBuilder: (context, error, stackTrace) {
+                                                        return Container(
+                                                          color: Colors.grey[300],
+                                                          height: 200,
+                                                          width: 150,
+                                                          child: const Center(
+                                                            child: Text('Imagen no disponible'),
+                                                          ),
+                                                        );
+                                                      },
+                                                    )
+                                                  : Container(
+                                                      color: Colors.grey[300],
+                                                      height: 200,
+                                                      width: 150,
+                                                      child: const Center(
+                                                        child: Text('Sin imagen'),
+                                                      ),
+                                                    ),
+                                              Padding(
+                                                padding: const EdgeInsets.all(8.0),
+                                                child: Text(
+                                                  libro['titulo'] ?? 'Título desconocido',
+                                                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                                  maxLines: 2,
+                                                  overflow: TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                                child: Text(
+                                                  libro['autor'] ?? 'Autor desconocido',
+                                                  style: const TextStyle(fontSize: 14, color: Colors.grey),
+                                                  maxLines: 1,
+                                                  overflow: TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                      const SizedBox(height: 20),
+                      Center(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            // Agregar la navegación para explorar más libros si es necesario
+                          },
+                          child: const Text('Explorar Más Libros'),
+                        ),
+                      ),
+                    ],
+                  ),
       ),
     );
   }

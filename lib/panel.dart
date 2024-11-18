@@ -1,10 +1,10 @@
 // panel.dart
 import 'package:flutter/material.dart';
-import 'lecturas_page.dart';  // Importa el archivo de LecturasPage
-import 'agregar_libro_page.dart';  // Importa el archivo de AgregarLibroPage
-import 'perfil_page.dart';  // Importa el archivo de PerfilPage
-import 'inicio_page.dart';  // Importa el archivo de InicioPage
-import 'buscar_libros_page.dart';  // Importa la nueva página
+import 'lecturas_page.dart';
+import 'agregar_libro_page.dart' as agregar_libro;
+import 'perfil_page.dart';
+import 'inicio_page.dart';
+import 'buscar_libro_page.dart' as buscar_libro; // Asegúrate de que el nombre coincida con tu archivo
 
 class Panel extends StatelessWidget {
   const Panel({super.key});
@@ -17,36 +17,24 @@ class Panel extends StatelessWidget {
         appBar: AppBar(
           backgroundColor: Colors.blue,
           title: Row(
-            mainAxisAlignment: MainAxisAlignment.start,  // Alinea a la izquierda
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Container(
-                height: 60,  // Aumenta el tamaño del contenedor
-                padding: const EdgeInsets.only(right: 16.0),  // Espacio entre el logo y el texto
+                height: 60,
+                padding: const EdgeInsets.only(right: 16.0),
                 child: Image.asset(
-                  'assets/images/logo.jpeg',  // Asegúrate de que sea una imagen de alta resolución
-                  fit: BoxFit.contain,  // Mantiene el aspecto de la imagen
+                  'assets/images/logo1.jpg',
+                  fit: BoxFit.contain,
                 ),
               ),
               const Text(
                 'NovelNook',
                 style: TextStyle(
-                  fontSize: 24,  // Aumenta el tamaño del texto
+                  fontSize: 24,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
               ),
-            ],
-          ),
-          bottom: const TabBar(
-            labelColor: Colors.white,
-            unselectedLabelColor: Colors.white70,
-            indicatorColor: Colors.white,
-            tabs: [
-              Tab(icon: Icon(Icons.home), text: 'Inicio'),
-              Tab(icon: Icon(Icons.book), text: 'Lecturas'),
-              Tab(icon: Icon(Icons.add), text: 'Agregar Libro'),
-              Tab(icon: Icon(Icons.search), text: 'Buscar Libros'), // Nueva pestaña
-              Tab(icon: Icon(Icons.person), text: 'Perfil'),
             ],
           ),
         ),
@@ -54,9 +42,21 @@ class Panel extends StatelessWidget {
           children: [
             InicioPage(),
             LecturasPage(),
-            AgregarLibroPage(),
-            BuscarLibrosPage(), // Nueva página
+            agregar_libro.AgregarLibroPage(), // Página de agregar libro
+            buscar_libro.BuscarLibroPage(), // Página de buscar libros
             PerfilPage(),
+          ],
+        ),
+        bottomNavigationBar: const TabBar(
+          labelColor: Colors.blue,
+          unselectedLabelColor: Colors.grey,
+          indicatorColor: Colors.transparent,
+          tabs: [
+            Tab(icon: Icon(Icons.home), text: 'Inicio'),
+            Tab(icon: Icon(Icons.book), text: 'Lecturas'),
+            Tab(icon: Icon(Icons.add), text: 'Agregar Libro'),
+            Tab(icon: Icon(Icons.search), text: 'Buscar Libros'),
+            Tab(icon: Icon(Icons.person), text: 'Perfil'),
           ],
         ),
       ),

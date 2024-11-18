@@ -1,147 +1,139 @@
 // agregar_libro_page.dart
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart'; // Verifica si la aplicación se ejecuta en la web
 
 class AgregarLibroPage extends StatefulWidget {
   const AgregarLibroPage({super.key});
 
   @override
-  _AgregarLibroPageState createState() => _AgregarLibroPageState();
+  AgregarLibroPageState createState() => AgregarLibroPageState(); // Clase pública
 }
 
-class _AgregarLibroPageState extends State<AgregarLibroPage> {
-  final TextEditingController titleController = TextEditingController();
-  final TextEditingController authorController = TextEditingController();
-  final TextEditingController descriptionController = TextEditingController();
-  
-  String? selectedImage;
-  String? selectedPdf;
+class AgregarLibroPageState extends State<AgregarLibroPage> {
+  final TextEditingController tituloController = TextEditingController();
+  final TextEditingController autorController = TextEditingController();
+  final TextEditingController descripcionController = TextEditingController();
+  Uint8List? imagenBytes;
+  Uint8List? pdfBytes;
+  String? imagenNombre;
+  String? pdfNombre;
+
+  Future<void> seleccionarArchivo(bool esImagen) async {
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: esImagen ? FileType.image : FileType.custom,
+        allowedExtensions: esImagen ? null : ['pdf'],
+      );
+
+      if (result != null) {
+        setState(() {
+          if (kIsWeb) {
+            if (esImagen) {
+              imagenBytes = result.files.single.bytes;
+              imagenNombre = result.files.single.name;
+            } else {
+              pdfBytes = result.files.single.bytes;
+              pdfNombre = result.files.single.name;
+            }
+          }
+        });
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(esImagen ? 'Imagen seleccionada' : 'PDF seleccionado')),
+          );
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('No se seleccionó ningún archivo')),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al seleccionar archivo: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> agregarLibro() async {
+    final uri = Uri.parse('http://192.168.1.36/DH-NovelBook/agregar_libro.php');
+    var request = http.MultipartRequest('POST', uri);
+    request.fields['titulo'] = tituloController.text;
+    request.fields['autor'] = autorController.text;
+    request.fields['descripcion'] = descripcionController.text;
+
+    if (imagenNombre != null) {
+      request.files.add(http.MultipartFile.fromBytes('imagen', imagenBytes!, filename: imagenNombre));
+    }
+    if (pdfNombre != null) {
+      request.files.add(http.MultipartFile.fromBytes('pdf', pdfBytes!, filename: pdfNombre));
+    }
+
+    var response = await request.send();
+    if (mounted) {
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Libro agregado exitosamente')));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Error al agregar el libro')));
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Agregar Libro'),
-        backgroundColor: Colors.blue,
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Título del Libro',
-                style: TextStyle(fontSize: 18),
-              ),
-              TextField(
-                controller: titleController,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Ingresa el título',
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TextField(
+              controller: tituloController,
+              decoration: const InputDecoration(labelText: 'Título'),
+            ),
+            const SizedBox(height: 10),
+            TextField(
+              controller: autorController,
+              decoration: const InputDecoration(labelText: 'Autor'),
+            ),
+            const SizedBox(height: 10),
+            TextField(
+              controller: descripcionController,
+              decoration: const InputDecoration(labelText: 'Descripción'),
+              maxLines: 3,
+            ),
+            const SizedBox(height: 20),
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: [
+                ElevatedButton(
+                  onPressed: () => seleccionarArchivo(true),
+                  child: Text(imagenNombre == null ? 'Seleccionar Imagen' : 'Imagen seleccionada'),
                 ),
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Autor',
-                style: TextStyle(fontSize: 18),
-              ),
-              TextField(
-                controller: authorController,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Ingresa el nombre del autor',
+                ElevatedButton(
+                  onPressed: () => seleccionarArchivo(false),
+                  child: Text(pdfNombre == null ? 'Seleccionar PDF' : 'PDF seleccionado'),
                 ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Center(
+              child: ElevatedButton(
+                onPressed: agregarLibro,
+                child: const Text('Agregar Libro'),
               ),
-              const SizedBox(height: 16),
-              const Text(
-                'Descripción',
-                style: TextStyle(fontSize: 18),
-              ),
-              TextField(
-                controller: descriptionController,
-                maxLines: 4,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Ingresa una breve descripción',
-                ),
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Selecciona una Imagen',
-                style: TextStyle(fontSize: 18),
-              ),
-              const SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: () async {
-                  FilePickerResult? result = await FilePicker.platform.pickFiles(
-                    type: FileType.image,
-                  );
-                  if (result != null) {
-                    setState(() {
-                      selectedImage = result.files.single.name;
-                    });
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blueAccent,
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                ),
-                child: const Text('Elegir Imagen'),
-              ),
-              if (selectedImage != null)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: Text('Imagen seleccionada: $selectedImage'),
-                ),
-              const SizedBox(height: 16),
-              const Text(
-                'Selecciona el PDF del Libro',
-                style: TextStyle(fontSize: 18),
-              ),
-              const SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: () async {
-                  FilePickerResult? result = await FilePicker.platform.pickFiles(
-                    type: FileType.custom,
-                    allowedExtensions: ['pdf'],
-                  );
-                  if (result != null) {
-                    setState(() {
-                      selectedPdf = result.files.single.name;
-                    });
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blueAccent,
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                ),
-                child: const Text('Elegir PDF'),
-              ),
-              if (selectedPdf != null)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: Text('PDF seleccionado: $selectedPdf'),
-                ),
-              const SizedBox(height: 20),
-              Center(
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Lógica para guardar el libro
-                    // titleController.text, authorController.text, descriptionController.text, selectedImage, selectedPdf
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                  ),
-                  child: const Text(
-                    'Guardar Libro',
-                    style: TextStyle(fontSize: 18),
-                  ),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

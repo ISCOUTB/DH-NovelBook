@@ -37,9 +37,21 @@ dependencies:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
+
   cupertino_icons: ^1.0.8
   file_picker: ^5.0.0
   url_launcher: ^6.0.20  
+  font_awesome_flutter: ^10.8.0
+  webview_flutter: ^4.0.0
+  http: ^1.2.2
+  path_provider: ^2.0.15
+  path: ^1.8.3
+  flutter_pdfview: ^1.3.4
+  pdfx: ^2.0.1
+ 
+
+
+
 
 dev_dependencies:
   flutter_test:
@@ -51,6 +63,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^4.0.0
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -74,7 +87,9 @@ flutter:
     - assets/images/logo1.jpg
     - assets/images/libro4.jpg
     - assets/images/libro5.jpg  
-    - assets/images/libro6.png    
+    - assets/images/libro6.png
+    - assets/images/logoF.png    
+    - assets/images/logoF.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
